@@ -1,7 +1,8 @@
 from pprint import pformat
+from time import sleep
 import logging
 
-from motor import tb6612fng
+import motor.tb6612fng
 
 log = logging.getLogger(__name__)
 
@@ -11,4 +12,7 @@ class Controller:
 		pass
 
 	def start(self):
-		pass
+		
+		log.debug('Starting motor..')
+		motor.tb6612fng.runMotor()
+		sleep(5)
