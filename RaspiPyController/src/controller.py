@@ -1,7 +1,7 @@
 from pprint import pformat
 import logging
 
-from motor import TB6612FNG
+from motor import tb6612fng
 
 log = logging.getLogger(__name__)
 
