@@ -4,9 +4,7 @@ import logging, logging.config
 
 from controller import Controller
 
-CONFIGURATION = CF = {
-	
-}
+CONFIGURATION = CF = {}
 
 LOGGING_CONFIG = {
 	'version': 1,
