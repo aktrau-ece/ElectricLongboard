@@ -28,3 +28,5 @@ class Controller:
 		pass
 
 	def connectWithRemote(self, remote_mac=PERIPHERAL_MAC_ADDRESS):
+
+		pass
