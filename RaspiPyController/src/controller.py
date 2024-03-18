@@ -31,7 +31,7 @@ class Controller:
 
 		log.debug(f'Available bluetooth peripherals: {pformat(service_matches)}')
 
-		service_match = service_matches[0] # pick the 1st match
+		service_match = service_matches[0] # choose the 1st match
 		port = service_match['port']
 		name = service_match['name']
 		host = service_match['host']
@@ -40,4 +40,3 @@ class Controller:
 		sock = bt.BluetoothSocket(bt.RFCOMM)
 		connection_result = sock.connect((host, port))
 		log.debug(f'{connection_result}')
-		
