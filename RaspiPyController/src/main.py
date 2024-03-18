@@ -2,7 +2,7 @@ import os
 from pprint import pformat
 import logging, logging.config
 
-from controller import Controller
+from controller import Controller, DriveMode
 
 CONFIGURATION = CF = {}
 
