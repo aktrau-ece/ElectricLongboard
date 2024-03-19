@@ -2,7 +2,7 @@ from pprint import pformat
 from time import sleep
 import logging
 
-import bluetooth as bt
+import bluetooth
 
 log = logging.getLogger(__name__)
 
@@ -26,29 +26,29 @@ class Controller:
 
 	def connectWithRemote(self, remote_mac=PERIPHERAL_MAC_ADDRESS):
 
-		log.debug(f'Searching for bluetooth peripheral..')
+		log.debug(f'Searching for bluetooth peripherals..')
 
-		for attempt in range(5):
-			result = bt.lookup_name(remote_mac, timeout=20)
-			if result is None: log.debug(f'Could find peripheral with MAC {remote_mac}, trying again..')
-			else: break
+		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
 
-		service_matches = bt.find_service( address=remote_mac )
-		if len(service_matches) == 0:
-			log.critical(f'Bluetooth peripheral not found')
-			raise SystemExit
+		for addr, name, device_class in available_devices:
+			print(name, device_class, addr)
 
-		log.debug(f'Available bluetooth peripherals: {pformat(service_matches)}')
+		# service_matches = bt.find_service( address=remote_mac )
+		# if len(service_matches) == 0:
+		# 	log.error(f'Bluetooth peripheral not found')
+		# 	raise SystemExit
 
-		service_match = service_matches[0] # choose the 1st match
-		port = service_match['port']
-		name = service_match['name']
-		host = service_match['host']
+		# log.debug(f'Available bluetooth peripherals: {pformat(service_matches)}')
 
-		log.debug(f'Connecting to "{name}", on host {host}, through port {port}..')
-		sock = bt.BluetoothSocket(bt.RFCOMM)
-		connection_result = sock.connect((host, port))
-		log.debug(f'{connection_result}')
+		# service_match = service_matches[0] # choose the 1st match
+		# port = service_match['port']
+		# name = service_match['name']
+		# host = service_match['host']
 
-		sleep(5)
-		sock.close()
+		# log.debug(f'Connecting to "{name}", on host {host}, through port {port}..')
+		# sock = bt.BluetoothSocket(bt.RFCOMM)
+		# connection_result = sock.connect((host, port))
+		# log.debug(f'{connection_result}')
+
+		# sleep(5)
+		# sock.close()
