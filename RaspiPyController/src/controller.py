@@ -6,7 +6,7 @@ import bluetooth
 
 log = logging.getLogger(__name__)
 
-PERIPHERAL_MAC_ADDRESS = '48:E7:29:A1:85:84'
+PERIPHERAL_MAC_ADDRESS = '48:E7:29:A1:85:86'
 
 class Controller:
 
@@ -32,7 +32,7 @@ class Controller:
 		log.info( 'Found devices:\n' + pformat(devices_unpacked) )
 
 		log.debug(f'Scanning for bluetooth services..')
-		service_matches = bluetooth.find_service()
+		service_matches = bluetooth.find_service(address=addr)
 		log.debug('Found services:\n' + pformat(service_matches) )
 		# first_match = service_matches[0]
 		# port = first_match["port"]

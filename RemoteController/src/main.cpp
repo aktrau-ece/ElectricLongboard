@@ -23,7 +23,7 @@ void setup() {
 	Serial.println("Running setup..");
 
 	// WiFi.mode(WIFI_MODE_STA);
-	// Serial.println("MAC Address: " + WiFi.macAddress()); // 48:E7:29:A1:85:84
+	// Serial.println("MAC Address: " + WiFi.macAddress()); // 48:E7:29:A1:85:86
 
 	SerialBT.begin("ESP32-Joystick");
 
