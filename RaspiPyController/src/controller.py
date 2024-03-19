@@ -24,7 +24,7 @@ class Controller:
 		
 		self.connectToRemote()
 
-	def connectToRemote(self, client_addr=PERIPHERAL_MAC_ADDRESS, port=3, backlog=1, size=1024):
+	def connectToRemote(self, server_addr=PERIPHERAL_MAC_ADDRESS, port=3, backlog=1, size=1024):
 
 		log.debug(f'Scanning for bluetooth peripherals..')
 		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
@@ -33,12 +33,10 @@ class Controller:
 
 		log.debug(f'Connecting to client..')
 		sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-		sock.bind((client_addr, port))
-		sock.listen(backlog)
+		sock.connect((server_addr, port))
 
-		client, client_info = sock.accept()
 		while 1:
-			data = client.recv(size)
+			data = sock.recv(size)
 			if data: print(data)
 			else: print('No data')
 			sleep(1)

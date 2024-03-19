@@ -43,7 +43,9 @@ void loop() {
 	Serial.println(throttle);
 
 	String dataPacket = String(throttle) + "\n";
-	SerialBT.print(dataPacket);
+	if (SerialBT.available()) {
+		SerialBT.print(dataPacket);
+	}
 
 	delay(2000);
 	Serial.println("End of loop");
