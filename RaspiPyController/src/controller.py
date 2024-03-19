@@ -43,6 +43,7 @@ class Controller:
 		sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 		sock.connect((host, port))
 
+		log.debug(f'Reading messages..')
 		while True:
 			data = sock.recv(size)
 			if data: print(data)

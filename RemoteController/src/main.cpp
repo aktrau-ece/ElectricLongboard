@@ -45,6 +45,8 @@ void loop() {
 	String dataPacket = String(throttle) + "\n";
 	if (SerialBT.available()) {
 		SerialBT.print(dataPacket);
+	} else {
+		Serial.println("Serial isnt available, nothing sent");
 	}
 
 	delay(2000);
