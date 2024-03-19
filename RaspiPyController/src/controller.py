@@ -29,7 +29,7 @@ class Controller:
 		log.debug(f'Scanning for bluetooth peripherals..')
 		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
 		devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
-		log.info( pformat(devices_unpacked) )
+		log.info( 'Found devices:\n' + pformat(devices_unpacked) )
 
 		log.debug(f'Connecting to client..')
 		sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -40,5 +40,7 @@ class Controller:
 		while 1:
 			data = client.recv(size)
 			if data: print(data)
+			else: print('No data')
+			sleep(1)
 
 		sock.close()
