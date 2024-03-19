@@ -22,33 +22,22 @@ class Controller:
 
 	def start(self):
 		
-		self.connectWithRemote()
+		self.connectToRemote()
 
-	def connectWithRemote(self, remote_mac=PERIPHERAL_MAC_ADDRESS):
+	def connectToRemote(self, client_addr=PERIPHERAL_MAC_ADDRESS, port=3, backlog=1, size=1024):
 
 		log.debug(f'Searching for bluetooth peripherals..')
-
 		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
+		devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
+		log.info( pformat(devices_unpacked) )
 
-		for addr, name, device_class in available_devices:
-			print(name, device_class, addr)
+		sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+		sock.bind((hostMACAddress, port))
+		sock.listen(backlog)
 
-		# service_matches = bt.find_service( address=remote_mac )
-		# if len(service_matches) == 0:
-		# 	log.error(f'Bluetooth peripheral not found')
-		# 	raise SystemExit
+		client, client_info = sock.accept()
+		while 1:
+			data = client.recv(size)
+			if data: print(data)
 
-		# log.debug(f'Available bluetooth peripherals: {pformat(service_matches)}')
-
-		# service_match = service_matches[0] # choose the 1st match
-		# port = service_match['port']
-		# name = service_match['name']
-		# host = service_match['host']
-
-		# log.debug(f'Connecting to "{name}", on host {host}, through port {port}..')
-		# sock = bt.BluetoothSocket(bt.RFCOMM)
-		# connection_result = sock.connect((host, port))
-		# log.debug(f'{connection_result}')
-
-		# sleep(5)
-		# sock.close()
+		sock.close()
