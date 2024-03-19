@@ -32,8 +32,8 @@ class Controller:
 		log.info( 'Found devices:\n' + pformat(devices_unpacked) )
 
 		log.debug(f'Scanning for bluetooth services..')
-		service_matches = bluetooth.find_service(address=server_addr)
-		print(pformat(service_matches))
+		service_matches = bluetooth.find_service()
+		log.debug('Found services:\n' pformat(service_matches) )
 		# first_match = service_matches[0]
 		# port = first_match["port"]
 		# name = first_match["name"]
