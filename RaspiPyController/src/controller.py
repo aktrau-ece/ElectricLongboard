@@ -31,6 +31,15 @@ class Controller:
 		devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
 		log.info( 'Found devices:\n' + pformat(devices_unpacked) )
 
+		log.debug(f'Scanning for bluetooth services..')
+		service_matches = bluetooth.find_service(address=server_addr)
+		print(pformat(service_matches))
+		# first_match = service_matches[0]
+		# port = first_match["port"]
+		# name = first_match["name"]
+		# host = first_match["host"]
+
+
 		log.debug(f'Connecting to client..')
 		sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 		sock.connect((server_addr, port))
