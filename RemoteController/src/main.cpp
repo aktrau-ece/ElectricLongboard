@@ -43,11 +43,7 @@ void loop() {
 	Serial.println(throttle);
 
 	String dataPacket = String(throttle) + "\n";
-	if (SerialBT.available()) {
-		SerialBT.print(dataPacket);
-	} else {
-		Serial.println("Serial isnt available, nothing sent");
-	}
+	SerialBT.print(dataPacket);
 
 	delay(2000);
 	Serial.println("End of loop");
