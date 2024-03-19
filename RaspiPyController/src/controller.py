@@ -26,7 +26,13 @@ class Controller:
 
 	def connectWithRemote(self, remote_mac=PERIPHERAL_MAC_ADDRESS):
 
-		log.debug(f'Searching for bluetooth peripherals..')
+		log.debug(f'Searching for bluetooth peripheral..')
+
+		while True:
+			result = bluetooth.lookup_name(remote_mac, timeout=20)
+			if result is None: log.debug(f'Could find peripheral with MAC {remote_mac}, trying again..')
+			else: break
+
 		service_matches = bt.find_service( address=remote_mac )
 		if len(service_matches) == 0:
 			log.critical(f'Bluetooth peripheral not found')
