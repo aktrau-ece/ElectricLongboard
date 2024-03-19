@@ -6,7 +6,7 @@ import bluetooth as bt
 
 log = logging.getLogger(__name__)
 
-PERIPHERAL_MAC_ADDRESS = '24:DC:C3:98:9E:F0'
+PERIPHERAL_MAC_ADDRESS = '48:E7:29:A1:85:84'
 
 class Controller:
 
@@ -26,8 +26,11 @@ class Controller:
 
 	def connectWithRemote(self, remote_mac=PERIPHERAL_MAC_ADDRESS):
 
+		log.debug(f'Searching for bluetooth peripherals..')
 		service_matches = bt.find_service( address=remote_mac )
-		if len(service_matches) == 0: log.error(f'Bluetooth peripheral not found')
+		if len(service_matches) == 0:
+			log.critical(f'Bluetooth peripheral not found')
+			raise SystemExit
 
 		log.debug(f'Available bluetooth peripherals: {pformat(service_matches)}')
 
@@ -40,3 +43,6 @@ class Controller:
 		sock = bt.BluetoothSocket(bt.RFCOMM)
 		connection_result = sock.connect((host, port))
 		log.debug(f'{connection_result}')
+
+		sleep(5)
+		sock.close()
