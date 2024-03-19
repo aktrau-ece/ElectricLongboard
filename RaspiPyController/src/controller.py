@@ -26,13 +26,14 @@ class Controller:
 
 	def connectToRemote(self, client_addr=PERIPHERAL_MAC_ADDRESS, port=3, backlog=1, size=1024):
 
-		log.debug(f'Searching for bluetooth peripherals..')
+		log.debug(f'Scanning for bluetooth peripherals..')
 		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
 		devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
 		log.info( pformat(devices_unpacked) )
 
+		log.debug(f'Connecting to client..')
 		sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-		sock.bind((hostMACAddress, port))
+		sock.bind((client_addr, port))
 		sock.listen(backlog)
 
 		client, client_info = sock.accept()
