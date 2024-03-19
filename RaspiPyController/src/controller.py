@@ -29,7 +29,7 @@ class Controller:
 		log.debug(f'Searching for bluetooth peripheral..')
 
 		while True:
-			result = bluetooth.lookup_name(remote_mac, timeout=20)
+			result = bt.lookup_name(remote_mac, timeout=20)
 			if result is None: log.debug(f'Could find peripheral with MAC {remote_mac}, trying again..')
 			else: break
 
