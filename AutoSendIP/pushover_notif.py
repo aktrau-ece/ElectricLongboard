@@ -10,4 +10,4 @@ ip_addr = subprocess.check_output(['hostname', '-I']).decode('utf-8')
 print(f'Hostname: {ip_addr}')
 
 client = Client(user_key, api_token=api_token)
-client.send_message(f'Here is my IP address: {}', title='RPi Login')
+client.send_message(f'Here is my IP address: {ip_addr}', title='RPi Login')
