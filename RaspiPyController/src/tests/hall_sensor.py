@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 
 log = logging.getLogger(__name__)
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 HALL_PIN = 23
 
 def testHallSensor():
