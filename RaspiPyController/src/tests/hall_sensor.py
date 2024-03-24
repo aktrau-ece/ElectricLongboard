@@ -25,6 +25,7 @@ def testHallSensor():
 			log.debug(f'{indent}+')
 		else: log.debug(f'{indent}-')
 
+		coin = not(coin)
 		sleep(0.5)
 
 	GPIO.cleanup()
