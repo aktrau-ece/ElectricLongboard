@@ -22,7 +22,10 @@ class Controller:
 
 	def start(self):
 		
-		self.connectToRemote()
+		# self.connectToRemote()
+		
+		import tests.hall_sensor
+		hall_sensor.testHallSensor()
 
 	def connectToRemote(self, server_addr=PERIPHERAL_MAC_ADDRESS, size=1024):
 
