@@ -14,10 +14,16 @@ def testHallSensor():
 	log.debug('Hall sensor test start')
 
 	GPIO.setup(HALL_PIN, GPIO.IN)
+
+	coin = True
 	while True:
+
+		if coin: indent = ' '
+		else: indent = ''
+
 		if GPIO.input(HALL_PIN) == GPIO.HIGH:
-			log.debug('+')
-		else: log.debug('-')
+			log.debug(f'{indent}+')
+		else: log.debug(f'{indent}-')
 
 		sleep(0.5)
 
