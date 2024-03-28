@@ -58,7 +58,7 @@ class RemoteControl(threading.Thread):
 		self.log.info( 'Found devices: ' + pformat(devices_unpacked) )
 
 		self.log.info(f'Scanning for bluetooth services..')
-		service_matches = bluetooth.find_service(address=slave_macaddr)
+		service_matches = bluetooth.find_service(address=self.slave_macaddr)
 		self.log.info('Found services: ' + pformat(service_matches) )
 		first_match = service_matches[0]
 		port = first_match["port"]
