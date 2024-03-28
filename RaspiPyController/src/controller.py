@@ -23,6 +23,7 @@ class Controller:
 
 	def start(self):
 		
+		self.joystick_buffer_lock = threading.Lock()
 		self.joystick_buffer = Queue(maxsize=10)
 		self.remote_control = RemoteControl(
 			joystick_buffer = self.joystick_buffer,
@@ -34,7 +35,7 @@ class Controller:
 
 class RemoteControl(threading.Thread):
 
-	def __init__(self, joystick_buffer:Queue, **kwargs):
+	def __init__(self, joystick_buffer:Queue, joystick_buffer_lock, **kwargs):
 
 		# Check for any bad arguments
 		kwparams = ['name', 'slave_macaddr', 'size', 'log']
@@ -43,6 +44,7 @@ class RemoteControl(threading.Thread):
 
 		threading.Thread.__init__(self)
 		self.joystick_buffer = joystick_buffer
+		self.joystick_buffer_lock = joystick_buffer_lock
 		self.name = kwargs.get('name', 'controller:remote')	
 		self.slave_macaddr = kwargs.get('slave_macaddr', PERIPHERAL_MAC_ADDRESS)
 		self.size = kwargs.get('size', 1024)
@@ -75,7 +77,14 @@ class RemoteControl(threading.Thread):
 			raw_data = sock.recv(self.size)
 			data = int(raw_data.decode('utf-8'))
 			if data:
-				self.joystick_buffer.put(data)
+				self.joystickBufferForcePush(data)
 				self.log.debug(f'Joystick position buffer: {list(self.joystick_buffer.queue)}')
 
 		sock.close()
+
+	def joystickBufferForcePush(self, item):
+
+		self.joystick_buffer_lock.acquire(blocking=1)
+		if self.joystick_buffer.full(): self.joystick_buffer.get()
+		self.joystick_buffer.put(item)
+		self.joystick_buffer_lock.release()
