@@ -55,10 +55,10 @@ class RemoteControl(threading.Thread):
 
 		self.log.info('Here!')
 
-		self.log.info(f'Scanning for bluetooth peripherals..')
-		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
-		devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
-		self.log.info( 'Found devices: ' + pformat(devices_unpacked) )
+		# self.log.info(f'Scanning for bluetooth peripherals..')
+		# available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
+		# devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
+		# self.log.info( 'Found devices: ' + pformat(devices_unpacked) )
 
 		self.log.info(f'Scanning for bluetooth services..')
 		service_matches = bluetooth.find_service(address=self.slave_macaddr)
