@@ -76,7 +76,7 @@ class RemoteControl(threading.Thread):
 
 		while True:
 			raw_data = sock.recv(self.size)
-			data = int(raw_data.decode('utf-8'))
+			data = repr(raw_data.decode('utf-8'))
 			if data:
 				self.joystickBufferForcePush(data)
 				self.log.debug(f'Joystick position buffer: {list(self.joystick_buffer.queue)}')
