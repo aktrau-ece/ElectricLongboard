@@ -42,10 +42,10 @@ void loop() {
 	Serial.print("Calculated throttle: ");
 	Serial.println(throttle);
 
-	String dataPacket = String(throttle) + "\n";
-	SerialBT.print(dataPacket);
+	String dataPacket = String(throttle);
+	SerialBT.println(dataPacket);
 
-	delay(2000);
+	delay(1000);
 	Serial.println("End of loop");
 }
 
