@@ -1,6 +1,8 @@
 from pprint import pformat
 from time import sleep
 import logging
+from queue import Queue
+import threading
 
 import bluetooth
 
@@ -12,44 +14,67 @@ class Controller:
 
 	def __init__(self, **kwargs):
 
-		self.traction_control = kwargs.get('traction_control', True)
-
-		# Check for bad arguments in kwargs
+		# Check for any bad arguments
 		kwparams = []
 		for arg in kwargs:
 			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
-		
+
+		self.traction_control = kwargs.get('traction_control', True)
 
 	def start(self):
 		
-		# self.connectToRemote()
-		
-		import tests.hall_sensor
-		hall_sensor.testHallSensor()
+		self.joystick_buffer = Queue(maxsize=10)
+		self.remote_control = RemoteControl(
+			joystick_buffer = self.joystick_buffer,
+			name = 'controller:remote',
+			slave_macaddr = PERIPHERAL_MAC_ADDRESS
+		)
 
-	def connectToRemote(self, server_addr=PERIPHERAL_MAC_ADDRESS, size=1024):
+		self.remote_control.run()
 
-		log.debug(f'Scanning for bluetooth peripherals..')
+class RemoteControl(threading.Thread):
+
+	def __init__(self, joystick_buffer:Queue, **kwargs):
+
+		# Check for any bad arguments
+		kwparams = ['name', 'slave_macaddr', 'size', 'log']
+		for arg in kwargs:
+			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
+
+		threading.Thread.__init__(self)
+		self.joystick_buffer = joystick_buffer
+		self.name = kwargs.get('name', 'controller:remote')	
+		self.slave_macaddr = kwargs.get('slave_macaddr', PERIPHERAL_MAC_ADDRESS)
+		self.size = kwargs.get('size', 1024)
+		self.log = kwargs.get('log', logging.getLogger(self.name))
+
+	def run(self):
+
+		self.log.info('Here!')
+
+		self.log.info(f'Scanning for bluetooth peripherals..')
 		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
 		devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
-		log.info( 'Found devices:\n' + pformat(devices_unpacked) )
+		self.log.info( 'Found devices: ' + pformat(devices_unpacked) )
 
-		log.debug(f'Scanning for bluetooth services..')
-		service_matches = bluetooth.find_service(address=server_addr)
-		log.debug('Found services:\n' + pformat(service_matches) )
+		self.log.info(f'Scanning for bluetooth services..')
+		service_matches = bluetooth.find_service(address=slave_macaddr)
+		self.log.info('Found services: ' + pformat(service_matches) )
 		first_match = service_matches[0]
 		port = first_match["port"]
 		name = first_match["name"]
 		host = first_match["host"]
 
-		log.debug(f'Connecting to client..')
+		self.log.info(f'Connecting to client..')
 		sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 		sock.connect((host, port))
 
-		log.debug(f'Reading messages..')
+		self.log.info(f'Reading messages..')
+
 		while True:
-			data = sock.recv(size)
-			if data: print(data)
-			else: print('No data')
+			data = sock.recv(size).encode('utf-8')
+			if data:
+				self.joystick_buffer.put(data)
+				self.log.debug(f'Joystick position buffer: {str(self.joystick_buffer)}')
 
 		sock.close()
