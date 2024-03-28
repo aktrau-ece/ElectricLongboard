@@ -72,7 +72,8 @@ class RemoteControl(threading.Thread):
 		self.log.info(f'Reading messages..')
 
 		while True:
-			data = sock.recv(self.size).encode('utf-8')
+			raw_data = sock.recv(self.size)
+			data = int(raw_data.decode('utf-8'))
 			if data:
 				self.joystick_buffer.put(data)
 				self.log.debug(f'Joystick position buffer: {str(self.joystick_buffer)}')
