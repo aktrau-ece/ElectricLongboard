@@ -27,6 +27,7 @@ class Controller:
 		self.joystick_buffer = Queue(maxsize=10)
 		self.remote_control = RemoteControl(
 			joystick_buffer = self.joystick_buffer,
+			joystick_buffer_lock = self.joystick_buffer_lock
 			name = 'controller:remote',
 			slave_macaddr = PERIPHERAL_MAC_ADDRESS
 		)
