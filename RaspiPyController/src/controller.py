@@ -23,8 +23,9 @@ class Controller:
 
 	def start(self):
 		
-		self.joystick_buffer_lock = threading.Lock()
-		self.joystick_buffer = Queue(maxsize=10)
+		self.joystick_buffer = Queue(maxsize=10) # queue for tracking joystick position reports
+		self.joystick_buffer_lock = threading.Lock() # mutex for updating the joystick_buffer
+
 		self.remote_control = RemoteControl(
 			joystick_buffer = self.joystick_buffer,
 			joystick_buffer_lock = self.joystick_buffer_lock,
@@ -36,7 +37,7 @@ class Controller:
 
 class RemoteControl(threading.Thread):
 
-	def __init__(self, joystick_buffer:Queue, joystick_buffer_lock, **kwargs):
+	def __init__(self, joystick_buffer:Queue, joystick_buffer_lock:threading.Lock, **kwargs):
 
 		# Check for any bad arguments
 		kwparams = ['name', 'slave_macaddr', 'size', 'log']
@@ -55,11 +56,6 @@ class RemoteControl(threading.Thread):
 
 		self.log.info('Here!')
 
-		# self.log.info(f'Scanning for bluetooth peripherals..')
-		# available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
-		# devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
-		# self.log.info( 'Found devices: ' + pformat(devices_unpacked) )
-
 		self.log.info(f'Scanning for bluetooth services..')
 		service_matches = bluetooth.find_service(address=self.slave_macaddr)
 		self.log.info('Found services: ' + pformat(service_matches) )
@@ -77,15 +73,24 @@ class RemoteControl(threading.Thread):
 		while True:
 			raw_data = sock.recv(self.size)
 			data = int(raw_data.decode('utf-8'))
-			
+
 			self.joystickBufferForcePush(data)
 			self.log.debug(f'Joystick position buffer: {list(self.joystick_buffer.queue)}')
 
 		sock.close()
 
+	def scanForDevices(self):
+
+		self.log.info(f'Scanning for bluetooth peripherals..')
+		available_devices = bluetooth.discover_devices(lookup_names=True, lookup_class=True)
+		devices_unpacked = [f'{name} | {addr} | {_class}' for addr, name, _class in available_devices]
+		self.log.info( 'Found devices: ' + pformat(devices_unpacked) )
+
 	def joystickBufferForcePush(self, item):
 
 		self.joystick_buffer_lock.acquire(blocking=1)
+
 		if self.joystick_buffer.full(): self.joystick_buffer.get()
 		self.joystick_buffer.put(item)
+
 		self.joystick_buffer_lock.release()
