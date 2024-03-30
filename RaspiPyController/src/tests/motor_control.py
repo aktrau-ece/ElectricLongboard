@@ -19,21 +19,24 @@ def testMotorControl():
 	pwm_1.start(0)
 
 	while True:
-
-		log.debug('Setting duty cycle to "70%"')
-		pwm_1.ChangeDutyCycle(70)
+		duty_cycle = 10
+		log.debug('Setting duty cycle to "duty_cycle%"')
+		pwm_1.ChangeDutyCycle(duty_cycle)
 		sleep(2)
 
-		log.debug('Setting duty cycle to "80%"')
-		pwm_1.ChangeDutyCycle(80)
+		duty_cycle = 20
+		log.debug('Setting duty cycle to "duty_cycle%"')
+		pwm_1.ChangeDutyCycle(duty_cycle)
 		sleep(2)
 
-		log.debug('Setting duty cycle to "90%"')
-		pwm_1.ChangeDutyCycle(90)
+		duty_cycle = 30
+		log.debug('Setting duty cycle to "duty_cycle%"')
+		pwm_1.ChangeDutyCycle(duty_cycle)
 		sleep(2)
 
-		log.debug('Setting duty cycle to "80%"')
-		pwm_1.ChangeDutyCycle(80)
+		duty_cycle = 20
+		log.debug('Setting duty cycle to "duty_cycle%"')
+		pwm_1.ChangeDutyCycle(duty_cycle)
 		sleep(2)
 
 	GPIO.cleanup()
