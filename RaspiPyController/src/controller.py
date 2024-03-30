@@ -4,9 +4,12 @@ import logging
 from queue import Queue
 import threading
 
+import RPi.GPIO as GPIO
 import bluetooth
 
 log = logging.getLogger(__name__)
+
+GPIO.setmode(GPIO.BCM)
 
 PERIPHERAL_MAC_ADDRESS = '48:E7:29:A1:85:86'
 
@@ -47,7 +50,7 @@ class RemoteControl(threading.Thread):
 		threading.Thread.__init__(self)
 		self.joystick_buffer = joystick_buffer
 		self.joystick_buffer_lock = joystick_buffer_lock
-		self.name = kwargs.get('name', 'controller:remote')	
+		self.name = kwargs.get('name', 'controller:remote')
 		self.slave_macaddr = kwargs.get('slave_macaddr', PERIPHERAL_MAC_ADDRESS)
 		self.size = kwargs.get('size', 1024)
 		self.log = kwargs.get('log', logging.getLogger(self.name))
