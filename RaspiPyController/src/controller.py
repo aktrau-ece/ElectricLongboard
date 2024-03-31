@@ -7,11 +7,15 @@ import threading
 import RPi.GPIO as GPIO
 import bluetooth
 
+from motorcontrol import MotorControl
+
 log = logging.getLogger(__name__)
 
 GPIO.setmode(GPIO.BCM)
 
-PERIPHERAL_MAC_ADDRESS = '48:E7:29:A1:85:86'
+REMOTE_CONTROL_MAC_ADDRESS = '48:E7:29:A1:85:86'
+LEFT_MOTOR_THROTTLE_PIN = 12
+# RIGHT_MOTOR_THROTTLE_PIN = 12
 
 '''
 Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
@@ -20,22 +24,21 @@ concurrently.
 '''
 class Controller:
 
-	def __init__(self, **kwargs):
+	def __init__(self):
 
-		kwparams = ['traction_control']
-		for arg in kwargs:
-			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
-
-		self.traction_control = kwargs.get('traction_control', True)
-
-	def start(self):
+		self.left_motor_control = MotorControl(motor_throttle_pin=LEFT_MOTOR_THROTTLE_PIN)
 
 		self.remote_control = RemoteControl(
 			name = 'controller:remote',
-			periph_macaddr = PERIPHERAL_MAC_ADDRESS
+			periph_macaddr = REMOTE_CONTROL_MAC_ADDRESS
 		)
 
-		self.remote_control.run()
+	def start(self):
+
+		try:
+			self.remote_control.run()
+
+		finally: GPIO.cleanup()
 '''
 This thread communicates with the remote control (ESP32 connected to a joystick) via bluetooth classic.
 '''
@@ -49,16 +52,16 @@ class RemoteControl(threading.Thread):
 		`log`: Optional logger. If not specified, a logger with the name given in the `name` param will
 			be created and used
 	'''
-	def __init__(self, **kwargs):
+	def __init__(self, periph_macaddr, **kwargs):
 
 		threading.Thread.__init__(self)
+		self.periph_macaddr = periph_macaddr
 
-		kwparams = ['name', 'periph_macaddr', 'size', 'log']
+		kwparams = ['name', 'size', 'log']
 		for arg in kwargs:
 			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
 
 		self.name = kwargs.get('name', 'controller:remote')
-		self.periph_macaddr = kwargs.get('periph_macaddr', PERIPHERAL_MAC_ADDRESS)
 		self.size = kwargs.get('size', 1024)
 		self.log = kwargs.get('log', logging.getLogger(self.name))
 
@@ -110,14 +113,15 @@ class RemoteControl(threading.Thread):
 
 		self.log.info(f'Reading messages..')
 
-		while True:
-			data = sock.recv(self.size)
-			joystick_pos = int(data.decode('utf-8'))
+		try:
+			while True:
+				data = sock.recv(self.size)
+				joystick_pos = int(data.decode('utf-8'))
 
-			self.pushJoystickBuffer(joystick_pos)
-			self.log.debug(f'Joystick position buffer: {self.getJoystickBufferAsList()}')
+				self.pushJoystickBuffer(joystick_pos)
+				self.log.debug(f'Joystick position buffer: {self.getJoystickBufferAsList()}')
 
-		sock.close()
+		finally: sock.close()
 
 	def pushJoystickBuffer(self, pos:int):
 
