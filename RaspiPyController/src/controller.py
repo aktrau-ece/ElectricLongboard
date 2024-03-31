@@ -13,12 +13,16 @@ GPIO.setmode(GPIO.BCM)
 
 PERIPHERAL_MAC_ADDRESS = '48:E7:29:A1:85:86'
 
+'''
+Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
+throttle signals to the motors. Remote control communication, sensor data collection, and motor control are done
+concurrently.
+'''
 class Controller:
 
 	def __init__(self, **kwargs):
 
-		# Check for any bad arguments
-		kwparams = []
+		kwparams = ['traction_control']
 		for arg in kwargs:
 			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
 
@@ -33,17 +37,29 @@ class Controller:
 			joystick_buffer = self.joystick_buffer,
 			joystick_buffer_lock = self.joystick_buffer_lock,
 			name = 'controller:remote',
-			slave_macaddr = PERIPHERAL_MAC_ADDRESS
+			periph_macaddr = PERIPHERAL_MAC_ADDRESS
 		)
 
 		self.remote_control.run()
-
+'''
+This thread communicates with the remote control (ESP32 connected to a joystick) via bluetooth classic.
+'''
 class RemoteControl(threading.Thread):
 
+	'''
+	Params:
+		`joystick_buffer`: Buffer used to keep a short history of joystick position data, intended for
+			smoothening any abrupt throttle changes
+		`joystick_buffer_lock`: Mutex used for making changes to `joystick_buffer`
+		`name`: The name of this thread (used for logging) (default is "controller:remote")
+		`periph_macaddr`: MAC address of the remote control
+		`size`: Bluetooth receive size (default is 1024)
+		`log`: Optional logger. If not specified, a logger with the name given in the `name` param will
+			be created and used
+	'''
 	def __init__(self, joystick_buffer:Queue, joystick_buffer_lock:threading.Lock, **kwargs):
 
-		# Check for any bad arguments
-		kwparams = ['name', 'slave_macaddr', 'size', 'log']
+		kwparams = ['name', 'periph_macaddr', 'size', 'log']
 		for arg in kwargs:
 			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
 
@@ -51,7 +67,7 @@ class RemoteControl(threading.Thread):
 		self.joystick_buffer = joystick_buffer
 		self.joystick_buffer_lock = joystick_buffer_lock
 		self.name = kwargs.get('name', 'controller:remote')
-		self.slave_macaddr = kwargs.get('slave_macaddr', PERIPHERAL_MAC_ADDRESS)
+		self.periph_macaddr = kwargs.get('periph_macaddr', PERIPHERAL_MAC_ADDRESS)
 		self.size = kwargs.get('size', 1024)
 		self.log = kwargs.get('log', logging.getLogger(self.name))
 
@@ -60,7 +76,7 @@ class RemoteControl(threading.Thread):
 		self.log.info('Here!')
 
 		self.log.info(f'Scanning for bluetooth services..')
-		service_matches = bluetooth.find_service(address=self.slave_macaddr)
+		service_matches = bluetooth.find_service(address=self.periph_macaddr)
 		self.log.info('Found services: ' + pformat(service_matches) )
 		first_match = service_matches[0]
 		port = first_match["port"]
@@ -82,6 +98,9 @@ class RemoteControl(threading.Thread):
 
 		sock.close()
 
+	'''
+	Scan for any nearby bluetooth peripherals
+	'''
 	def scanForDevices(self):
 
 		self.log.info(f'Scanning for bluetooth peripherals..')
