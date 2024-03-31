@@ -29,13 +29,8 @@ class Controller:
 		self.traction_control = kwargs.get('traction_control', True)
 
 	def start(self):
-		
-		self.joystick_buffer = Queue(maxsize=10) # queue for tracking joystick position reports
-		self.joystick_buffer_lock = threading.Lock() # mutex for updating the joystick_buffer
 
 		self.remote_control = RemoteControl(
-			joystick_buffer = self.joystick_buffer,
-			joystick_buffer_lock = self.joystick_buffer_lock,
 			name = 'controller:remote',
 			periph_macaddr = PERIPHERAL_MAC_ADDRESS
 		)
@@ -80,6 +75,7 @@ class RemoteControl(threading.Thread):
 
 		port, name, host = self.findService()
 		sock = self.connectToClient(port, name, host)
+		self.readMessages(sock)
 
 	def scanForDevices(self):
 
