@@ -17,7 +17,7 @@ REMOTE_CONTROL_MAC_ADDRESS = '48:E7:29:A1:85:86'
 
 MOTOR_1_THROTTLE_PIN = 12
 
-THROTTLE_UPDATE_RATE = 60 # Hz
+MOTOR_THROTTLE_UPDATE_RATE = 1 # Hz
 
 '''
 Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
@@ -42,11 +42,18 @@ class Controller:
 
 			while True:
 				joystick_pos = self.remote_control.getAverageJoystickPos()
-				self.motor1_control.setThrottle(joystick_pos)
+				throttle = self.calcThrottle(joystick_pos)
+				self.motor1_control.applyThrottle(throttle)
 
-				sleep(1/THROTTLE_UPDATE_RATE)
+				sleep(1/MOTOR_THROTTLE_UPDATE_RATE)
 
 		finally: GPIO.cleanup()
+
+	def calcThrottle(self, joystick_pos):
+
+		throttle = max(0, min(100, joystick_pos))
+		return throttle
+
 '''
 This thread communicates with the remote control (ESP32 connected to a joystick) via bluetooth classic.
 '''

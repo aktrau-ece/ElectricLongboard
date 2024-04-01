@@ -22,11 +22,13 @@ LOGGING_CONFIG = {
 		'controller:remote': {
 			'handlers': ['console'],
 			
-			# DEBUG not recommended for fast remote control report rates
+			# DEBUG is NOT recommended for fast remote control report rates
 			'level': 'DEBUG'
 		},
 		'motorcontrol': {
 			'handlers': ['console'],
+
+			# DEBUG is NOT recommended for fast motor throttle update rates
 			'level': 'DEBUG'
 		},
 	},
