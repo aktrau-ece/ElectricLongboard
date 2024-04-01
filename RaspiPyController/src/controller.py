@@ -17,7 +17,7 @@ REMOTE_CONTROL_MAC_ADDRESS = '48:E7:29:A1:85:86'
 
 MOTOR_1_THROTTLE_PIN = 12
 
-MOTOR_THROTTLE_UPDATE_RATE = 1 # Hz
+MOTOR_THROTTLE_UPDATE_RATE = 5 # Hz
 
 '''
 Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
@@ -52,7 +52,6 @@ class Controller:
 		except KeyboardInterrupt:
 			self.remote_control.stop()
 			GPIO.cleanup()
-			raise SystemExit
 
 	def calcThrottle(self, joystick_pos):
 
@@ -103,6 +102,7 @@ class RemoteControl(threading.Thread):
 
 	def stop(self):
 
+		self.log.info(f'Stopping..')
 		self.stop_event.set()
 
 	def scanForDevices(self):
@@ -135,6 +135,8 @@ class RemoteControl(threading.Thread):
 		return sock
 
 	def readMessages(self, sock):
+
+		self.log.info('Reading messages..')
 
 		try:
 			while not self.stop_event.is_set():
