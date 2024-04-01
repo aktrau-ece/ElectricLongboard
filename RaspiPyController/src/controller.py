@@ -49,7 +49,10 @@ class Controller:
 
 			self.remote_control.join()
 
-		finally: GPIO.cleanup()
+		except KeyboardInterrupt:
+			self.remote_control.stop()
+			GPIO.cleanup()
+			raise SystemExit
 
 	def calcThrottle(self, joystick_pos):
 
@@ -72,6 +75,8 @@ class RemoteControl(threading.Thread):
 	def __init__(self, periph_macaddr, **kwargs):
 
 		threading.Thread.__init__(self)
+		self.stop_event = threading.Event()
+
 		self.periph_macaddr = periph_macaddr
 
 		kwparams = ['name', 'size', 'log']
@@ -81,7 +86,6 @@ class RemoteControl(threading.Thread):
 		self.name = kwargs.get('name', 'controller:remote')
 		self.size = kwargs.get('size', 1024)
 		self.log = kwargs.get('log', logging.getLogger(self.name))
-
 
 		self.joys_pos_buffer = deque([0 for i in range(10)], maxlen=10) # joystick position buffer.
 			# circular buffer used to keep a short history of joystick position data - intended 
@@ -95,7 +99,13 @@ class RemoteControl(threading.Thread):
 
 		port, name, host = self.findService()
 		sock = self.connectToClient(port, name, host)
-		self.readMessages(sock)
+
+		while not self.stop_event.is_set():
+			self.readMessage(sock)
+
+	def stop(self):
+
+		self.stop_event.set()
 
 	def scanForDevices(self):
 
@@ -126,17 +136,14 @@ class RemoteControl(threading.Thread):
 
 		return sock
 
-	def readMessages(self, sock):
-
-		self.log.info(f'Reading messages..')
+	def readMessage(self, sock):
 
 		try:
-			while True:
-				data = sock.recv(self.size)
-				joystick_pos = int(data.decode('utf-8'))
+			data = sock.recv(self.size)
+			joystick_pos = int(data.decode('utf-8'))
 
-				self.pushJoystickBuffer(joystick_pos)
-				self.log.debug(f'Joystick position buffer: {self.getJoystickBufferAsList()}')
+			self.pushJoystickBuffer(joystick_pos)
+			self.log.debug(f'Joystick position buffer: {self.getJoystickBufferAsList()}')
 
 		finally: sock.close()
 
