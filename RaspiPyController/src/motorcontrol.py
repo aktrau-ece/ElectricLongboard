@@ -33,7 +33,7 @@ class MotorControl(threading.Thread):
 		min_duty_cycle = 30
 		max_duty_cycle = 100
 
-		duty_cycle = int(throttle * (max_duty_cycle-min_duty_cycle) + min_duty_cycle)
+		duty_cycle = int(throttle/100 * (max_duty_cycle-min_duty_cycle) + min_duty_cycle)
 
 		self.setPWMDutyCycle(duty_cycle)
 
