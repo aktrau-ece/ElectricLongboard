@@ -99,9 +99,7 @@ class RemoteControl(threading.Thread):
 
 		port, name, host = self.findService()
 		sock = self.connectToClient(port, name, host)
-
-		while not self.stop_event.is_set():
-			self.readMessage(sock)
+		self.readMessages(sock)
 
 	def stop(self):
 
@@ -136,14 +134,15 @@ class RemoteControl(threading.Thread):
 
 		return sock
 
-	def readMessage(self, sock):
+	def readMessages(self, sock):
 
 		try:
-			data = sock.recv(self.size)
-			joystick_pos = int(data.decode('utf-8'))
+			while not self.stop_event.is_set():
+				data = sock.recv(self.size)
+				joystick_pos = int(data.decode('utf-8'))
 
-			self.pushJoystickBuffer(joystick_pos)
-			self.log.debug(f'Joystick position buffer: {self.getJoystickBufferAsList()}')
+				self.pushJoystickBuffer(joystick_pos)
+				self.log.debug(f'Joystick position buffer: {self.getJoystickBufferAsList()}')
 
 		finally: sock.close()
 
