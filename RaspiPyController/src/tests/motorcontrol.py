@@ -19,6 +19,11 @@ def testMotorControl():
 	pwm_1.start(0)
 
 	while True:
+		duty_cycle = 30
+		log.debug(f'Setting duty cycle to "{duty_cycle}%"')
+		pwm_1.ChangeDutyCycle(duty_cycle)
+		sleep(2)
+
 		duty_cycle = 40
 		log.debug(f'Setting duty cycle to "{duty_cycle}%"')
 		pwm_1.ChangeDutyCycle(duty_cycle)
@@ -29,12 +34,7 @@ def testMotorControl():
 		pwm_1.ChangeDutyCycle(duty_cycle)
 		sleep(2)
 
-		duty_cycle = 60
-		log.debug(f'Setting duty cycle to "{duty_cycle}%"')
-		pwm_1.ChangeDutyCycle(duty_cycle)
-		sleep(2)
-
-		duty_cycle = 50
+		duty_cycle = 40
 		log.debug(f'Setting duty cycle to "{duty_cycle}%"')
 		pwm_1.ChangeDutyCycle(duty_cycle)
 		sleep(2)
