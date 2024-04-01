@@ -28,7 +28,7 @@ class MotorControl(threading.Thread):
 	Params:
 		`throttle`: amount of throttle to apply to motors (int between 0 and 100)
 	'''
-	def applyThrottle(throttle):
+	def applyThrottle(self, throttle):
 
 		min_duty_cycle = 30
 		max_duty_cycle = 100
