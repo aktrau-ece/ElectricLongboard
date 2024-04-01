@@ -21,11 +21,15 @@ LOGGING_CONFIG = {
 		},
 		'controller:remote': {
 			'handlers': ['console'],
-			'level': 'DEBUG' # DEBUG not recommended for fast remote control report rates
+			
+			# DEBUG is NOT recommended for fast remote control report rates
+			'level': 'INFO'
 		},
-		'motor.TB6612FNG': {
+		'motorcontrol': {
 			'handlers': ['console'],
-			'level': 'DEBUG'
+
+			# DEBUG is NOT recommended for fast motor throttle update rates
+			'level': 'INFO'
 		},
 	},
 
