@@ -16,6 +16,11 @@ class MotorControl(threading.Thread):
 		threading.Thread.__init__(self)
 		self.motor_throttle_pin = motor_throttle_pin
 
+		self.initGPIOPins()
+
+	def initGPIOPins(self):
+
+		GPIO.setup(MOTOR_1_PWM_PIN, GPIO.OUT)
 		self.motor_pwm = GPIO.PWM(self.motor_throttle_pin, PWM_FREQ)
 		self.motor_pwm.start(0)
 
