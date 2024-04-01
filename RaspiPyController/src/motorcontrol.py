@@ -20,7 +20,7 @@ class MotorControl(threading.Thread):
 
 	def initGPIOPins(self):
 
-		GPIO.setup(MOTOR_1_PWM_PIN, GPIO.OUT)
+		GPIO.setup(self.motor_throttle_pin, GPIO.OUT)
 		self.motor_pwm = GPIO.PWM(self.motor_throttle_pin, PWM_FREQ)
 		self.motor_pwm.start(0)
 
