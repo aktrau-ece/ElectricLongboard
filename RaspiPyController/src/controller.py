@@ -38,7 +38,7 @@ class Controller:
 	def start(self):
 
 		try:
-			self.remote_control.run()
+			self.remote_control.start()
 
 			while True:
 				joystick_pos = self.remote_control.getAverageJoystickPos()
@@ -46,6 +46,8 @@ class Controller:
 				self.motor1_control.applyThrottle(throttle)
 
 				sleep(1/MOTOR_THROTTLE_UPDATE_RATE)
+
+			self.remote_control.join()
 
 		finally: GPIO.cleanup()
 
