@@ -14,8 +14,10 @@ log = logging.getLogger(__name__)
 GPIO.setmode(GPIO.BCM)
 
 REMOTE_CONTROL_MAC_ADDRESS = '48:E7:29:A1:85:86'
-LEFT_MOTOR_THROTTLE_PIN = 12
-# RIGHT_MOTOR_THROTTLE_PIN = 12
+
+MOTOR_1_THROTTLE_PIN = 12
+
+THROTTLE_UPDATE_RATE = 60 # Hz
 
 '''
 Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
@@ -26,7 +28,7 @@ class Controller:
 
 	def __init__(self):
 
-		self.left_motor_control = MotorControl(motor_throttle_pin=LEFT_MOTOR_THROTTLE_PIN)
+		self.motor1_control = MotorControl(motor_throttle_pin=MOTOR_1_THROTTLE_PIN)
 
 		self.remote_control = RemoteControl(
 			name = 'controller:remote',
@@ -37,6 +39,12 @@ class Controller:
 
 		try:
 			self.remote_control.run()
+
+			while True:
+				joystick_pos = self.remote_control.getAverageJoystickPos()
+				self.motor1_control.setThrottle(joystick_pos)
+
+				sleep(1/THROTTLE_UPDATE_RATE)
 
 		finally: GPIO.cleanup()
 '''
@@ -130,4 +138,22 @@ class RemoteControl(threading.Thread):
 
 	def getJoystickBufferAsList(self):
 
-		return list(self.joys_pos_buffer)
+		with self.joys_pos_buffer_lock:
+			res = list(self.joys_pos_buffer)
+
+		return res
+
+	def getAverageJoystickPos(self):
+
+		with self.joys_pos_buffer_lock:
+			buffer = list(self.joys_pos_buffer)
+
+		avg = sum(buffer) / len(buffer)
+		return avg
+
+	def getCurrentJoystickPos(self):
+
+		with self.joys_pos_buffer_lock:
+			buffer = list(self.joys_pos_buffer)
+
+		return buffer[-1]
