@@ -17,7 +17,7 @@ REMOTE_CONTROL_MAC_ADDRESS = '48:E7:29:A1:85:86'
 
 MOTOR_1_THROTTLE_PIN = 12
 
-MOTOR_THROTTLE_UPDATE_RATE = 5 # Hz
+MOTOR_THROTTLE_UPDATE_RATE = 20 # Hz
 
 '''
 Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
