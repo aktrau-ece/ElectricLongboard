@@ -16,6 +16,8 @@ class MotorControl():
 
 		self.initGPIOPins()
 
+		log.debug(f'Initialized motor control throttle output on pin {self.motor_throttle_pin}')
+
 	def initGPIOPins(self):
 
 		GPIO.setup(self.motor_throttle_pin, GPIO.OUT)
@@ -29,7 +31,7 @@ class MotorControl():
 	def applyThrottle(self, throttle):
 
 		min_duty_cycle = 30
-		max_duty_cycle = 100
+		max_duty_cycle = 70
 
 		duty_cycle = int(throttle/100 * (max_duty_cycle-min_duty_cycle) + min_duty_cycle)
 

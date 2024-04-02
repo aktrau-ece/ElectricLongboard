@@ -31,6 +31,10 @@ LOGGING_CONFIG = {
 			# DEBUG is NOT recommended for fast motor throttle update rates
 			'level': 'INFO'
 		},
+		'speedsensor': {
+			'handlers': ['console'],
+			'level': 'DEBUG'
+		},
 	},
 
 	'handlers': {

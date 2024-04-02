@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 import bluetooth
 
 from motorcontrol import MotorControl
+from speedsensor import SpeedSensor
 
 log = logging.getLogger(__name__)
 
@@ -26,37 +27,61 @@ concurrently.
 '''
 class Controller:
 
-	def __init__(self):
+	def __init__(self, **kwargs):
 
-		self.motor1_control = MotorControl(motor_throttle_pin=MOTOR_1_THROTTLE_PIN)
+		kwparams = ['name', 'size', 'log']
+		for arg in kwargs:
+			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
+
+		self.enable_traction_control = kwargs.get('enable_traction_control', True)
+
+		self.motor_control_1 = MotorControl(motor_throttle_pin=MOTOR_1_THROTTLE_PIN)
 
 		self.remote_control = RemoteControl(
 			name = 'controller:remote',
 			periph_macaddr = REMOTE_CONTROL_MAC_ADDRESS
 		)
 
+		self.drivewheel_speedsensor = SpeedSensor(hall_sensor_pin=17)
+
 	def start(self):
 
 		try:
 			self.remote_control.start()
+			self.drivewheel_speedsensor.start()
 
 			while True:
 				joystick_pos = self.remote_control.getAverageJoystickPos()
-				throttle = self.calcThrottle(joystick_pos)
-				self.motor1_control.applyThrottle(throttle)
+				throttle = self.calcThrottle(joystick_pos, self.enable_traction_control)
+				self.motor_control_1.applyThrottle(throttle)
 
 				sleep(1/MOTOR_THROTTLE_UPDATE_RATE)
 
-			self.remote_control.join()
-
 		except KeyboardInterrupt:
 			self.remote_control.stop()
+			self.drivewheel_speedsensor.stop()
+
+			self.remote_control.join()
+			self.drivewheel_speedsensor.join()
+
 			GPIO.cleanup()
 
-	def calcThrottle(self, joystick_pos):
+	def calcThrottle(self, joystick_pos, enable_traction_control=self.enable_traction_control):
 
-		throttle = max(0, min(100, joystick_pos))
+		if enable_traction_control:
+			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
+
+
+		else:
+			throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
+
 		return throttle
+
+	@staticmethod
+	def constrainNum(value, min_val, max_val):
+
+		constrained_val = max(min_val, min(max_val, value))
+		return constrained_val
 
 '''
 This thread communicates with the remote control (ESP32 connected to a joystick) via bluetooth classic.
@@ -90,7 +115,8 @@ class RemoteControl(threading.Thread):
 			# circular buffer used to keep a short history of joystick position data - intended 
 			# to be used for smoothening any abrupt throttle changes. It can take values from 0 to 100
 
-		self.joys_pos_buffer_lock = threading.Lock() # mutex for managing changes to `joys_pos_buffer`
+		 # Mutex for managing changes to `joys_pos_buffer`
+		self.joys_pos_buffer_lock = threading.Lock()
 
 	def run(self):
 
@@ -156,9 +182,9 @@ class RemoteControl(threading.Thread):
 	def getJoystickBufferAsList(self):
 
 		with self.joys_pos_buffer_lock:
-			res = list(self.joys_pos_buffer)
+			buffer = list(self.joys_pos_buffer)
 
-		return res
+		return buffer
 
 	def getAverageJoystickPos(self):
 
@@ -171,6 +197,6 @@ class RemoteControl(threading.Thread):
 	def getCurrentJoystickPos(self):
 
 		with self.joys_pos_buffer_lock:
-			buffer = list(self.joys_pos_buffer)
+			current_js_pos = self.joys_pos_buffer[-1]
 
-		return buffer[-1]
+		return current_js_pos
