@@ -16,9 +16,10 @@ GPIO.setmode(GPIO.BCM)
 
 REMOTE_CONTROL_MAC_ADDRESS = '48:E7:29:A1:85:86'
 
-MOTOR_1_THROTTLE_PIN = 12
-
 MOTOR_THROTTLE_UPDATE_RATE = 20 # Hz
+
+WHEEL_1_MOTOR_THROTTLE_PIN = 12
+WHEEL_1_HALL_LATCH_PIN = 17
 
 '''
 Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
@@ -35,14 +36,14 @@ class Controller:
 
 		self.enable_traction_control = kwargs.get('enable_traction_control', True)
 
-		self.motor_control_1 = MotorControl(motor_throttle_pin=MOTOR_1_THROTTLE_PIN)
+		self.motor_control_1 = MotorControl(motor_throttle_pin=WHEEL_1_MOTOR_THROTTLE_PIN)
 
 		self.remote_control = RemoteControl(
 			name = 'controller:remote',
 			periph_macaddr = REMOTE_CONTROL_MAC_ADDRESS
 		)
 
-		self.drivewheel_speedsensor = SpeedSensor(hall_sensor_pin=17)
+		self.drivewheel_speedsensor = SpeedSensor(hall_sensor_pin=WHEEL_1_HALL_LATCH_PIN)
 
 	def start(self):
 
