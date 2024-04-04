@@ -31,6 +31,8 @@ class SpeedSensor(threading.Thread):
 		self.stop_event = threading.Event()
 
 		self.hall_sensor_pin = hall_sensor_pin
+		self.name = name
+
 		self.initGPIOPins()
 		log.info(f'Initialized speed sensor using pin {self.hall_sensor_pin}')
 
