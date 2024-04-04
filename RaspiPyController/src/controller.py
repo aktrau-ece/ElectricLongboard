@@ -43,7 +43,7 @@ class Controller:
 			periph_macaddr = REMOTE_CONTROL_MAC_ADDRESS
 		)
 
-		self.drivewheel_speedsensor = SpeedSensor(hall_sensor_pin=WHEEL_1_HALL_LATCH_PIN)
+		self.drivewheel_speedsensor = SpeedSensor(name='drive', hall_sensor_pin=WHEEL_1_HALL_LATCH_PIN)
 
 	def start(self):
 
