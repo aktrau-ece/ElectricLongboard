@@ -21,6 +21,7 @@ MOTOR_THROTTLE_UPDATE_RATE = 20 # Hz
 
 WHEEL_1_MOTOR_THROTTLE_PIN = 12
 WHEEL_1_HALL_LATCH_PIN = 17
+WHEEL_2_HALL_LATCH_PIN = 27
 
 '''
 Controls the longboard by establishing a connection with the remote control, recording sensor data, and sending
@@ -45,9 +46,10 @@ class Controller:
 		)
 
 		self.drivewheel_speedsensor = SpeedSensor(name='drive', hall_sensor_pin=WHEEL_1_HALL_LATCH_PIN)
+		self.freewheel_speedsensor = SpeedSensor(name='free', hall_sensor_pin=WHEEL_2_HALL_LATCH_PIN)
 
 		self.stats = Stats(
-			components = [self.remote_control, self.drivewheel_speedsensor]
+			components = [self.remote_control, self.drivewheel_speedsensor, self.freewheel_speedsensor]
 		)
 
 	def start(self):
@@ -81,6 +83,14 @@ class Controller:
 		if enable_traction_control:
 
 			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
+			free_wheel_speed = self.freewheel_speedsensor.getCurrentWheelSpeed()
+			drive_wheel_speed = self.drivewheel_speedsensor.getCrrentWheelSpeed()
+
+			if (drive_wheel_speed + free_wheel_speed) == 0:
+				throttle = user_throttle
+
+			elif self.normalizedDifference(drive_wheel_speed, free_wheel_speed) > 1/2:
+				throttle = 0
 
 
 		else: throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
@@ -92,6 +102,12 @@ class Controller:
 
 		constrained_val = max(min_val, min(max_val, value))
 		return constrained_val
+
+	@staticmethod
+	def normalizedDifference(val_1, val_2):
+
+		normalized_diff = (val_1 - val_2) / (val_1 + val_2)
+		return normalized_diff
 
 '''
 This class communicates with the remote control (ESP32 connected to a joystick) via bluetooth classic.
