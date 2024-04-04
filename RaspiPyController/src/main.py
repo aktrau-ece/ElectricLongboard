@@ -33,6 +33,8 @@ LOGGING_CONFIG = {
 		},
 		'speedsensor': {
 			'handlers': ['console'],
+
+			# DEBUG is NOT recommended for fast wheel speed report rates
 			'level': 'DEBUG'
 		},
 	},
@@ -48,7 +50,7 @@ LOGGING_CONFIG = {
 
 	'formatters': {
 		'standard': { 'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s' },
-		'console': { 'format': '[%(levelname)s] %(name)s: %(message)s' }
+		'console': { 'format': '[%(levelname)s] [%(name)s]: %(message)s' }
 	},
 }
 

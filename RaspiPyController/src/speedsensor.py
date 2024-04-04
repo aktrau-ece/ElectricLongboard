@@ -20,7 +20,7 @@ HALL_EFFECT_LATCH_SAMPLES_PER_WHEEL_SPEED_REPORT = 36
 
 # How many magnets are along the perimeter of the wheel.
 # It should be an even number, since the magnetic polarity should
-# flip from magnet to magnet
+# flip between magnets
 MAGNETS_PER_WHEEL = 6
 
 class SpeedSensor(threading.Thread):
@@ -66,8 +66,8 @@ class SpeedSensor(threading.Thread):
 		while not self.stop_event.is_set():
 
 			'''
-			I suspect that this loop might be performance-limiting, so im using numpy, even though
-			the array sizes are still pretty small
+			I suspect that this loop might be performance-limiting, so im using numpy where i can,
+			although the array sizes are still pretty small
 			'''
 
 			for i in range(samples_per_report):
@@ -78,14 +78,15 @@ class SpeedSensor(threading.Thread):
 				sleep(latch_sample_time)
 
 			# Count the amount of times the sample switches from HIGH to LOW or vice versa - how many
-			# times it "flips" while iterating across the array
+			# times it "flips" while iterating through the array
 			num_flips = np.sum(samples[:-1] != samples[1:])
 
 			# Wheel spin frequency in Hz
-			wheel_spin_freq = num_flips / 2 / MAGNETS_PER_WHEEL / report_time
+			# Note that each "flip" incident occurs when a magnet passes by the magnetic latch - 
+			# each full wheel revolution comprises of a `MAGNETS_PER_WHEEL` amount of flips.
+			wheel_spin_freq = num_flips / MAGNETS_PER_WHEEL / report_time
 
 			self.pushWheelSpeedBuffer(wheel_spin_freq)
-
 			log.debug(f'Wheel speed history: {self.getWheelSpeedBufferAsList()}')
 
 	'''
@@ -101,8 +102,8 @@ class SpeedSensor(threading.Thread):
 
 		with self.wheelspeed_buffer_lock:
 			buffer = list(self.wheelspeed_buffer)
-			rounded_buffer = np.round(buffer, decimal_places)
-
+		
+		rounded_buffer = np.round(buffer, decimal_places)
 		return rounded_buffer
 
 	def getCurrentWheelSpeed(self):

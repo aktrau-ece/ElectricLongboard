@@ -52,8 +52,7 @@ class Controller:
 			self.drivewheel_speedsensor.start()
 
 			while True:
-				joystick_pos = self.remote_control.getAverageJoystickPos()
-				throttle = self.calcThrottle(joystick_pos, self.enable_traction_control)
+				throttle = self.calcThrottle(self.enable_traction_control)
 				self.motor_control_1.applyThrottle(throttle)
 
 				sleep(1/MOTOR_THROTTLE_UPDATE_RATE)
@@ -67,13 +66,16 @@ class Controller:
 
 			GPIO.cleanup()
 
-	def calcThrottle(self, joystick_pos, enable_traction_control):
+	def calcThrottle(self, enable_traction_control):
+
+		joystick_pos = self.remote_control.getAveragedJoystickPos()
 
 		if enable_traction_control:
-			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
 
-		else:
-			throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
+			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
+			
+
+		else: throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
 
 		return throttle
 
@@ -84,7 +86,7 @@ class Controller:
 		return constrained_val
 
 '''
-This thread communicates with the remote control (ESP32 connected to a joystick) via bluetooth classic.
+This class communicates with the remote control (ESP32 connected to a joystick) via bluetooth classic.
 '''
 class RemoteControl(threading.Thread):
 
@@ -186,7 +188,7 @@ class RemoteControl(threading.Thread):
 
 		return buffer
 
-	def getAverageJoystickPos(self):
+	def getAveragedJoystickPos(self):
 
 		with self.joys_pos_buffer_lock:
 			buffer = list(self.joys_pos_buffer)
