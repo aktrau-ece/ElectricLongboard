@@ -18,6 +18,11 @@ HALL_EFFECT_LATCH_SAMPLE_RATE = 360
 # Default: 36
 HALL_EFFECT_LATCH_SAMPLES_PER_WHEEL_SPEED_REPORT = 36
 
+# How many magnets are along the perimeter of the wheel.
+# It should be an even number, since the magnetic polarity should
+# flip from magnet to magnet
+MAGNETS_PER_WHEEL = 6
+
 class SpeedSensor(threading.Thread):
 
 	def __init__(self, name, hall_sensor_pin:int):
@@ -45,7 +50,7 @@ class SpeedSensor(threading.Thread):
 
 	def stop(self):
 
-		self.log.info(f'Stopping..')
+		log.info(f'Stopping..')
 		self.stop_event.set()
 
 	def recordWheelSpeed(self):
@@ -77,7 +82,7 @@ class SpeedSensor(threading.Thread):
 			num_flips = np.sum(samples[:-1] != samples[1:])
 
 			# Wheel spin frequency in Hz
-			wheel_spin_freq = num_flips / 2 / report_time
+			wheel_spin_freq = num_flips / 2 / MAGNETS_PER_WHEEL / report_time
 
 			self.pushWheelSpeedBuffer(wheel_spin_freq)
 
