@@ -9,6 +9,7 @@ import bluetooth
 
 from motorcontrol import MotorControl
 from speedsensor import SpeedSensor
+from stats import Stats
 
 log = logging.getLogger(__name__)
 
@@ -45,11 +46,16 @@ class Controller:
 
 		self.drivewheel_speedsensor = SpeedSensor(name='drive', hall_sensor_pin=WHEEL_1_HALL_LATCH_PIN)
 
+		self.stats = Stats(
+			components = [self.remote_control, self.drivewheel_speedsensor]
+		)
+
 	def start(self):
 
 		try:
 			self.remote_control.start()
 			self.drivewheel_speedsensor.start()
+			self.stats.start()
 
 			while True:
 				throttle = self.calcThrottle(self.enable_traction_control)
@@ -60,9 +66,11 @@ class Controller:
 		except KeyboardInterrupt:
 			self.remote_control.stop()
 			self.drivewheel_speedsensor.stop()
+			self.stats.stop()
 
 			self.remote_control.join()
 			self.drivewheel_speedsensor.join()
+			self.stats.join()
 
 			GPIO.cleanup()
 
@@ -73,7 +81,7 @@ class Controller:
 		if enable_traction_control:
 
 			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
-			
+
 
 		else: throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
 
@@ -202,3 +210,8 @@ class RemoteControl(threading.Thread):
 			current_js_pos = self.joys_pos_buffer[-1]
 
 		return current_js_pos
+
+	def getStats(self):
+
+		stats = f'{__name__} | {self.name} | {str(self.getJoystickBufferAsList)}'
+		return stats

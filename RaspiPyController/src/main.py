@@ -35,7 +35,11 @@ LOGGING_CONFIG = {
 			'handlers': ['console'],
 
 			# DEBUG is NOT recommended for fast wheel speed report rates
-			'level': 'DEBUG'
+			'level': 'INFO'
+		},
+		'stats': {
+			'handlers': ['console'],
+			'level': 'INFO'
 		},
 	},
 

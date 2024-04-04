@@ -32,7 +32,7 @@ class SpeedSensor(threading.Thread):
 
 		self.hall_sensor_pin = hall_sensor_pin
 		self.initGPIOPins()
-		log.debug(f'Initialized speed sensor using pin {self.hall_sensor_pin}')
+		log.info(f'Initialized speed sensor using pin {self.hall_sensor_pin}')
 
 		# Circular buffer for storing a history of wheel-speed recordings
 		self.wheelspeed_buffer = deque([0 for i in range(10)], maxlen=10)
@@ -46,6 +46,7 @@ class SpeedSensor(threading.Thread):
 
 	def run(self):
 
+		log.info(f'Here!!!!!')
 		self.recordWheelSpeed()
 
 	def stop(self):
@@ -112,3 +113,8 @@ class SpeedSensor(threading.Thread):
 			current_wheelspeed = self.wheelspeed_buffer[-1]
 
 		return current_wheelspeed
+
+	def getStats(self):
+
+		stats = f'{__name__} | {self.name} | {str(self.getWheelSpeedBufferAsList)}'
+		return stats
