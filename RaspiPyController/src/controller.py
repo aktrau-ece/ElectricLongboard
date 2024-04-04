@@ -213,5 +213,5 @@ class RemoteControl(threading.Thread):
 
 	def getStats(self):
 
-		stats = f'{__name__} | {self.name} | {str(self.getJoystickBufferAsList)}'
+		stats = f'{__name__} | {self.name} | {str(self.getJoystickBufferAsList())}'
 		return stats

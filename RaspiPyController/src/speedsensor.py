@@ -116,5 +116,5 @@ class SpeedSensor(threading.Thread):
 
 	def getStats(self):
 
-		stats = f'{__name__} | {self.name} | {str(self.getWheelSpeedBufferAsList)}'
+		stats = f'{__name__} | {self.name} | {str(self.getWheelSpeedBufferAsList())}'
 		return stats
