@@ -34,7 +34,7 @@ class Controller:
 		for arg in kwargs:
 			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
 
-		self.enable_traction_control = kwargs.get('enable_traction_control', True)
+		self.enable_traction_control = kwargs.get('enable_traction_control', False)
 
 		self.motor_control_1 = MotorControl(motor_throttle_pin=WHEEL_1_MOTOR_THROTTLE_PIN)
 
@@ -67,11 +67,10 @@ class Controller:
 
 			GPIO.cleanup()
 
-	def calcThrottle(self, joystick_pos, enable_traction_control=self.enable_traction_control):
+	def calcThrottle(self, joystick_pos, enable_traction_control):
 
 		if enable_traction_control:
 			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
-
 
 		else:
 			throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
