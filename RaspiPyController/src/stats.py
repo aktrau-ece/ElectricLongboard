@@ -40,7 +40,8 @@ class Stats(threading.Thread):
 
 		while not self.stop_event.is_set():
 
-			stats ='\n\t'.join([component.getStats() for component in self.components])
-			log.info(f'\n\t{stats}')
+			for component in self.components:
+				stats = component.getStats()
+				log.info(stats)
 
 			sleep(display_time)
