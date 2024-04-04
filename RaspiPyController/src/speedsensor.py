@@ -1,5 +1,6 @@
 from pprint import pformat
 from time import sleep
+from collections import deque
 import logging, logging.config
 import threading
 
