@@ -36,7 +36,7 @@ class Controller:
 		for arg in kwargs:
 			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
 
-		self.enable_traction_control = kwargs.get('enable_traction_control', True)
+		self.enable_traction_control = kwargs.get('enable_traction_control', False)
 
 		self.motor_control_1 = MotorControl(motor_throttle_pin=WHEEL_1_MOTOR_THROTTLE_PIN)
 

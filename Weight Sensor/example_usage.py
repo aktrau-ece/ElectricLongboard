@@ -3,7 +3,7 @@ import time  # Import the time module for sleep functionality
 
 def main():
     #GPIO Pin definations
-    dout_pin = 23 
+    dout_pin = 27
     pd_sck_pin = 22
     target_weight = 13
 
