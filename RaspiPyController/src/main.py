@@ -54,7 +54,7 @@ LOGGING_CONFIG = {
 
 	'formatters': {
 		'standard': { 'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s' },
-		'console': { 'format': '[%(levelname)s] [%(name)s]: %(message)s' }
+		'console': { 'format': '[%(name)s][%(levelname)s]: %(message)s' }
 	},
 }
 
