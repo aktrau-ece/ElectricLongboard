@@ -103,7 +103,7 @@ class SpeedSensor(threading.Thread):
 			buffer = list(self.wheelspeed_buffer)
 			rounded_buffer = np.round(buffer, decimal_places)
 
-		return buffer
+		return rounded_buffer
 
 	def getCurrentWheelSpeed(self):
 
