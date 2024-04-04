@@ -84,7 +84,7 @@ class Controller:
 
 			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
 			free_wheel_speed = self.freewheel_speedsensor.getCurrentWheelSpeed()
-			drive_wheel_speed = self.drivewheel_speedsensor.getCrrentWheelSpeed()
+			drive_wheel_speed = self.drivewheel_speedsensor.getCurrentWheelSpeed()
 
 			if (drive_wheel_speed + free_wheel_speed) == 0:
 				throttle = user_throttle
