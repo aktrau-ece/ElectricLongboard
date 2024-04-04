@@ -1,17 +1,19 @@
-# code.py
-
 from weight_sensor import WeightSensor
+import time  # Import the time module for sleep functionality
 
 def main():
-    dout_pin = int(input("Enter DOUT pin number: "))
-    pd_sck_pin = int(input("Enter PD_SCK pin number: "))
-    target_weight = float(input("Enter target weight value (kg): "))
+    #GPIO Pin definations
+    dout_pin = 23 
+    pd_sck_pin = 22
+    target_weight = 13
 
-    sensor = WeightSensor(23, 22, 13.0)
+    sensor = WeightSensor(dout_pin, pd_sck_pin, target_weight)
 
     print("Checking weight...")
-    result = sensor.check_weight()
-    print("Weight check result:", "Above target" if result == 1 else "Below target")
+    while True:  # Start an infinite loop
+        result = sensor.check_weight()
+        print("Weight check result:", "Above target" if result == 1 else "Below target")
+        time.sleep(1)  # Wait for 1 second before the next check
 
 if __name__ == "__main__":
     main()
