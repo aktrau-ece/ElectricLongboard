@@ -34,11 +34,11 @@ class Stats(threading.Thread):
 
 	def displayStatsContinuous(self):
 
-		log.info(f'Beginning statistic display')
+		log.info(f'Beginning stats display')
 
 		display_time = 1 / STAT_DISPLAY_RATE
 
 		while not self.stop_event.is_set():
 
-			stats = [component.getStats() for component in self.components].join('\n')
+			stats ='\n'.join[component.getStats() for component in self.components]
 			sleep(display_time)
