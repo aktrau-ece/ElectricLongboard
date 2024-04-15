@@ -80,11 +80,15 @@ class Controller:
 
 		joystick_pos = self.remote_control.getAveragedJoystickPos()
 
+		free_wheel_speed = self.freewheel_speedsensor.getCurrentWheelSpeed()
+		drive_wheel_speed = self.drivewheel_speedsensor.getCurrentWheelSpeed()
+
+		# If the rotational speed of the free wheel is more than 30 Hz, reduce motor throttle (limits speed)
+		if free_wheel_speed > 30: return 0
+
 		if enable_traction_control:
 
 			user_throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
-			free_wheel_speed = self.freewheel_speedsensor.getCurrentWheelSpeed()
-			drive_wheel_speed = self.drivewheel_speedsensor.getCurrentWheelSpeed()
 
 			if (drive_wheel_speed + free_wheel_speed) == 0:
 				throttle = user_throttle
@@ -141,7 +145,7 @@ class RemoteControl(threading.Thread):
 			# circular buffer used to keep a short history of joystick position data - intended 
 			# to be used for smoothening any abrupt throttle changes. It can take values from 0 to 100
 
-		 # Mutex for managing changes to `joys_pos_buffer`
+		# Mutex for managing changes to `joys_pos_buffer`
 		self.joys_pos_buffer_lock = threading.Lock()
 
 	def run(self):
