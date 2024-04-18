@@ -32,7 +32,7 @@ class Controller:
 
 	def __init__(self, **kwargs):
 
-		kwparams = ['name', 'size', 'log']
+		kwparams = ['enable_traction_control']
 		for arg in kwargs:
 			if arg not in kwparams: log.error(f'Unknown argument: {arg}')
 
