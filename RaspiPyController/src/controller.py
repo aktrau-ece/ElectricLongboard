@@ -96,7 +96,6 @@ class Controller:
 			elif self.normalizedDifference(drive_wheel_speed, free_wheel_speed) > 1/2:
 				throttle = 0
 
-
 		else: throttle = self.constrainNum(joystick_pos, min_val=0, max_val=100)
 
 		return throttle
